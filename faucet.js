@@ -20,21 +20,18 @@ import { bech32 } from 'bech32';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { SigningStargateClient } from "@cosmjs/stargate";
 
-import conf from './config.js'
+import { conf } from './config.js'
 import { FrequencyChecker } from './checker.js';
-
-// load config
-console.log("loaded config: ", conf)
 
 const app = express()
 
 const checker = new FrequencyChecker(conf)
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(path.resolve('./index.html'));
 })
 
-app.get('/config.json', async (req, res) => {
+app.get('/config.json', async (_req, res) => {
   const sample = {}
   for(let i =0; i < conf.blockchains.length; i++) {
     const chainConf = conf.blockchains[i]
@@ -46,7 +43,7 @@ app.get('/config.json', async (req, res) => {
       sample[chainConf.name] = wallet.address;
     }
 
-    const wallet2 = Wallet.fromMnemonic(chainConf.sender.mnemonic, pathToString(chainConf.sender.option.hdPaths[0]));
+    const wallet2 = Wallet.fromMnemonic(chainConf.sender.mnemonic, pathToString(stringToPath(chainConf.sender.option.hdPath)));
     console.log('address:', sample[chainConf.name], wallet2.address);
   }
 
@@ -123,8 +120,8 @@ app.get('/send/:chain/:address', async (req, res) => {
   }
 })
 
-app.listen(conf.port, () => {
-  console.log(`Faucet app listening on port ${conf.port}`)
+app.listen(80, () => {
+  console.log(`Faucet app listening on port 80`)
 })
 
 async function sendCosmosTx(recipient, chain) {
@@ -152,9 +149,8 @@ async function sendEvmosTx(recipient, chain) {
 
   try{
     const chainConf = conf.blockchains.find(x => x.name === chain) 
-    // const ethProvider = new ethers.providers.JsonRpcProvider(chainConf.endpoint.evm_endpoint);
-
-    const wallet = Wallet.fromMnemonic(chainConf.sender.mnemonic); // .connect(ethProvider);
+    const ethProvider = new ethers.providers.JsonRpcProvider(chainConf.endpoint.evm_endpoint);
+    const wallet = Wallet.fromMnemonic(chainConf.sender.mnemonic).connect(ethProvider);
 
     let evmAddress =  recipient;
     if(recipient && !recipient.startsWith('0x')) {
@@ -201,21 +197,12 @@ async function sendTx(recipient, chain) {
   return sendCosmosTx(recipient, chain)
 }
 
-// write a function to send evmos transaction
-async function sendEvmosTx2(recipient, chain) {
-
-  // use evmosjs to send transaction
-  const chainConf = conf.blockchains.find(x => x.name === chain) 
-  // create a wallet instance
-  const wallet = Wallet.fromMnemonic(chainConf.sender.mnemonic).connect(chainConf.endpoint.evm_endpoint);
-}
-
 async function fromMnemonicEthermint(mnemonic, options) {
   const mnemonicChecked = new EnglishMnemonic(mnemonic);
   const seed = await Bip39.mnemonicToSeed(mnemonicChecked, options.bip39Password);
   const prefix = options.prefix ?? "cosmos";
-  const hdPaths = options.hdPaths ?? [stringToPath("m/44'/60'/0'/0/0")];
-  const hdPath = hdPaths[0];
+  const hdPathStr = options.hdPath ?? "m/44'/60'/0'/0/0";
+  const hdPath = stringToPath(hdPathStr)
   const { privkey } = Slip10.derivePath(Slip10Curve.Secp256k1, seed, hdPath);
   const { pubkey } = await Secp256k1.makeKeypair(privkey);
   

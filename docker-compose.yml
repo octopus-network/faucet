@@ -1,0 +1,8 @@
+version: "3.5"
+
+services:
+  faucet:
+    container_name: faucet
+    image: otto-faucet
+    ports:
+      - 18545:80
