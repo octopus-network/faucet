@@ -14,11 +14,8 @@
     <div id="app">
       <main class="container-md">
         <div class="py-5 text-center">
-          <img id="logo" class="d-block mx-auto mb-4" style="max-width: 250px;" src="https://raw.githubusercontent.com/octopus-network/oyster/ocb-otto/otto-the-octopus.png" :alt="`${testnet} Faucet`">
           <h1><span id="testnet">{{ testnet }}</span> Faucet</h1>
-          <p class="lead">Dear, Cosmonauts! <br>
-              Welcome to {{ testnet }}! Are you looking for some tokens to start? 
-          </p>
+          <p class="lead">Welcome to {{ testnet }}! Are you looking for some tokens to start? </p>
         </div>
         <div class="row g-5">
           <div class="input-group">
@@ -42,7 +39,7 @@
       </main>
     
       <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="my-2"> Faucet Address: {{ faucet }}, <br> Balance: {{ balance.amount }} {{balance.denom}}</p>
+        <p class="my-2"> Faucet Address: {{ faucet }}, <br> Balance: {{ balance.amount }} OT</p>
         <p class="mb-1">&copy; 2022 Built By <a href="https://ping.pub">Ping.pub</a><span id="deployer" v-html="deployer"></span></p>
         <ul class="list-inline">
           <li class="list-inline-item"><a href="https://github.com/ping-pub/faucet.git">Deploy a new instance?</a></li>

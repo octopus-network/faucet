@@ -39,7 +39,8 @@ app.get('/config.json', async (_req, res) => {
     const [firstAccount] = await wallet.getAccounts();
     sample[chainConf.name] = firstAccount.address
     if(chainConf.type === 'Ethermint') {
-      const wallet = await fromMnemonicEthermint(chainConf.sender.mnemonic, chainConf.sender.option);
+      // const wallet = await fromMnemonicEthermint(chainConf.sender.mnemonic, chainConf.sender.option);
+      const wallet = Wallet.fromMnemonic(chainConf.sender.mnemonic, pathToString(stringToPath(chainConf.sender.option.hdPath)));
       sample[chainConf.name] = wallet.address;
     }
 
@@ -120,8 +121,8 @@ app.get('/send/:chain/:address', async (req, res) => {
   }
 })
 
-app.listen(80, () => {
-  console.log(`Faucet app listening on port 80`)
+app.listen(8088, () => {
+  console.log(`Faucet app listening on port 8088`)
 })
 
 async function sendCosmosTx(recipient, chain) {
