@@ -31,6 +31,10 @@ app.get('/', (_req, res) => {
   res.sendFile(path.resolve('./index.html'));
 })
 
+app.get('/status', (_req, res) => {
+  res.status(200).send('OK');
+})
+
 app.get('/config.json', async (_req, res) => {
   const sample = {}
   for(let i =0; i < conf.blockchains.length; i++) {
@@ -121,8 +125,8 @@ app.get('/send/:chain/:address', async (req, res) => {
   }
 })
 
-app.listen(8088, () => {
-  console.log(`Faucet app listening on port 8088`)
+app.listen(80, () => {
+  console.log(`Faucet app listening on port 80`)
 })
 
 async function sendCosmosTx(recipient, chain) {
