@@ -61,7 +61,9 @@ resource "kubernetes_config_map" "default" {
     name      = "appchain-faucet-config-map"
     namespace = var.namespace
   }
-  data = var.APPCHAIN_CONF
+  data = {
+    APPCHAIN_CONF = var.APPCHAIN_CONF
+  }
 }
 
 # sts svc ing...
