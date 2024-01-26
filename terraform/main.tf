@@ -70,13 +70,14 @@ resource "kubernetes_config_map" "default" {
 resource "kubernetes_stateful_set" "default" {
   metadata {
     name = "appchain-faucet"
+    namespace = var.namespace
     labels = {
       app = "appchain-faucet"
     }
-    namespace = data.kubernetes_namespace.default.metadata.0.name
   }
   spec {
-    replicas = var.appchain_faucet.replicas
+    service_name = "appchain-faucet"
+    replicas = 1
     selector {
       match_labels = {
         app = "appchain-faucet"
